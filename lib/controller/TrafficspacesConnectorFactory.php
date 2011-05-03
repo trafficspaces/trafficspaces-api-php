@@ -22,7 +22,7 @@
  ** 
  ** Reference Documentation: http://support.trafficspaces.com/kb/api/api-introduction
  **/
-class TrafficspaceConnectorFactory {
+class TrafficspacesConnectorFactory {
 	private $ad_store_end_point;
 	private $ad_server_end_point;
 	

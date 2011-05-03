@@ -81,17 +81,12 @@ class TrafficspacesConnector {
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
         curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        if ($format == 'XML') {
-	        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-	            'Content-Type: application/xml',
-	            'Accept: application/xml'
-	        ));
-        } else {
-	        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-	            'Content-Type: application/json',
-	            'Accept: application/json'
-	        ));
-        }
+        
+        $contentType = $format == 'XML' ? "application/xml" : "application/json";
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+	    	"Content-Type: {$contentType}; charset=UTF-8",
+	        "Accept: {$contentType}"
+	    ));
 		
 		if (!empty($this->end_point->username)  && !empty($this->end_point->password)) {
         	curl_setopt($ch, CURLOPT_USERPWD, $this->end_point->username . ':' . $this->end_point->password);
@@ -147,7 +142,7 @@ class TrafficspacesConnector {
 	private function toQueryString($paramsArray) {
 		$queryString = "";
 		foreach ($paramsArray as $key => $value) {
-			$queryString .= urlencode($key) . "=" . urlencode($value);
+			$queryString .= urlencode($key) . "=" . urlencode($value) . "&";
 		}
 		return $queryString;
 	}	

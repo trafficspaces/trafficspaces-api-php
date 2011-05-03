@@ -22,8 +22,7 @@
  ** 
  ** Reference Documentation: http://support.trafficspaces.com/kb/api/api-orders
  **/
-class TrafficspacesOrder extends TrafficspacesResource
-{
+class TrafficspacesOrder extends TrafficspacesResource {
 	//******************************
 	//** INPUT & OUTPUT VARIABLES **
 	//******************************
@@ -74,8 +73,7 @@ class TrafficspacesOrder extends TrafficspacesResource
   	}
 }
 
-class TrafficspacesOrderStatistic extends TrafficspacesResource
-{
+class TrafficspacesOrderStatistic extends TrafficspacesResource {
 	//******************************
 	//**** OUTPUT ONLY VARIABLES ***
 	//******************************
