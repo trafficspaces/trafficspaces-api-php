@@ -27,7 +27,7 @@ class TrafficspacesConnectorFactory {
 	private $ad_server_end_point;
 	
 	public function __construct($sub_domain, $api_key = null) {
-		$this->ad_store_end_point	= new TrafficspacesEndPoint("http://{$sub_domain}.trafficspaces.com", $sub_domain, $api_key);
+		$this->ad_store_end_point	= new TrafficspacesEndPoint("https://{$sub_domain}.trafficspaces.com", $sub_domain, $api_key);
 		$this->ad_server_end_point	= new TrafficspacesEndPoint("http://ads.trafficspaces.net");
 	}
 		
