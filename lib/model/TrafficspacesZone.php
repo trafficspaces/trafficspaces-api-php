@@ -26,6 +26,7 @@ class TrafficspacesZone extends TrafficspacesResource {
 	//******************************
 	//** INPUT & OUTPUT VARIABLES **
 	//******************************
+	var $handle;
 	var $name;
 	var $width;
 	var $height;
