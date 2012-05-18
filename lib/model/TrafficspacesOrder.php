@@ -27,8 +27,8 @@ class TrafficspacesOrder extends TrafficspacesResource {
 	//** INPUT & OUTPUT VARIABLES **
 	//******************************
 	var $priority;
-	var $model;
-	var $price;
+	var $gross_purchase_price;
+	var $net_purchase_price;
 	var $maximum_bid_price;
 	var $total_volume;
 	var $daily_volume;	
@@ -44,8 +44,11 @@ class TrafficspacesOrder extends TrafficspacesResource {
 	//******************************
 	var $id;
 	var $name;
+	var $model;
 	var $status;
 	var $filled_volume;
+	var $average_bid_price;
+	var $scheduled_dates;
 	var $realm;
 	var $last_modified_date;
 
