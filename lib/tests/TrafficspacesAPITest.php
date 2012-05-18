@@ -69,10 +69,9 @@ class TrafficspacesAPITest {
 		$connector = $this->factory->getContactConnector();
 
 		// 1. List
-		//$contacts = $connector->find($this->defaults);
-		//echo "List: Found " . count($contacts) . " contacts\n";
-		$contact = $connector->delete("daeec5a7");
-		$contact = $connector->delete("daeec5a0");
+		$contacts = $connector->find($this->defaults);
+		echo "List: Found " . count($contacts) . " contacts\n";
+
 		// 2. Create
 		$contact = TrafficspacesContact::createContact("John Doe",
 				TrafficspacesContactProfile::createContactProfile("john@test.com", "Test Company", TrafficspacesContactProfile::TYPE_ADVERTISER),
