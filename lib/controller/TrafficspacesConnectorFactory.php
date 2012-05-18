@@ -26,57 +26,57 @@ class TrafficspacesConnectorFactory {
 	private $ad_store_end_point;
 	private $ad_server_end_point;
 	
-	public function __construct($sub_domain, $username = null, $password = null) {
-		$this->ad_store_end_point	= new TrafficspacesEndPoint("https://{$this->sub_domain}.trafficspaces.com", $this->username, $this->password);
+	public function __construct($sub_domain, $api_key = null) {
+		$this->ad_store_end_point	= new TrafficspacesEndPoint("http://{$sub_domain}.trafficspaces.com", $sub_domain, $api_key);
 		$this->ad_server_end_point	= new TrafficspacesEndPoint("http://ads.trafficspaces.net");
 	}
 		
 	public function getUserConnector() {
-		return new TrafficspaceConnector($this->ad_store_end_point, "/resources/users", "TrafficspacesUser");
+		return new TrafficspacesConnector($this->ad_store_end_point, "/resources/users", "TrafficspacesUser");
 	}
 	
 	public function getContactConnector() {
-		return new TrafficspaceConnector($this->ad_store_end_point, "/resources/contacts", "TrafficspacesContact");
+		return new TrafficspacesConnector($this->ad_store_end_point, "/resources/contacts", "TrafficspacesContact");
 	}
 	
 	public function getZoneConnector() {
-		return new TrafficspaceConnector($this->ad_store_end_point, "/resources/zones", "TrafficspacesZone");
+		return new TrafficspacesConnector($this->ad_store_end_point, "/resources/zones", "TrafficspacesZone");
 	}
 	
 	public function getZoneStatisticsConnector() {
-		return new TrafficspaceConnector($this->ad_store_end_point, "/resources/zones/statistics", "TrafficspacesZoneStatistic");
+		return new TrafficspacesConnector($this->ad_store_end_point, "/resources/zones/statistics", "TrafficspacesZoneStatistic");
 	}
 	
 	public function getAdConnector() {
-		return new TrafficspaceConnector($this->ad_store_end_point, "/resources/ads", "TrafficspacesAd");
+		return new TrafficspacesConnector($this->ad_store_end_point, "/resources/ads", "TrafficspacesAd");
 	}
 	
 	public function getCampaignConnector() {
-		return new TrafficspaceConnector($this->ad_store_end_point, "/resources/campaigns", "TrafficspacesCampaign");
+		return new TrafficspacesConnector($this->ad_store_end_point, "/resources/campaigns", "TrafficspacesCampaign");
 	}
 	
 	public function getTargetingPlanConnector() {
-		return new TrafficspaceConnector($this->ad_store_end_point, "/resources/targetingplans", "TrafficspacesTargetingPlan");
+		return new TrafficspacesConnector($this->ad_store_end_point, "/resources/targetingplans", "TrafficspacesTargetingPlan");
 	}
 	
 	public function getFeedConnector() {
-		return new TrafficspaceConnector($this->ad_store_end_point, "/resources/feeds", "TrafficspacesFeed");
+		return new TrafficspacesConnector($this->ad_store_end_point, "/resources/feeds", "TrafficspacesFeed");
 	}
 	
 	public function getOrderConnector() {
-		return new TrafficspaceConnector($this->ad_store_end_point, "/resources/orders", "TrafficspacesOrder");
+		return new TrafficspacesConnector($this->ad_store_end_point, "/resources/orders", "TrafficspacesOrder");
 	}
 	
 	public function getOrderStatisticsConnector() {
-		return new TrafficspaceConnector($this->ad_store_end_point, "/resources/orders/statistics", "TrafficspacesOrderStatistic");
+		return new TrafficspacesConnector($this->ad_store_end_point, "/resources/orders/statistics", "TrafficspacesOrderStatistic");
 	}
 	
 	public function getCouponConnector() {
-		return new TrafficspaceConnector($this->ad_store_end_point, "/resources/coupons", "TrafficspacesCoupon");
+		return new TrafficspacesConnector($this->ad_store_end_point, "/resources/coupons", "TrafficspacesCoupon");
 	}
 	
 	public function getPlacementConnector() {
-		return new TrafficspaceConnector($this->ad_server_end_point, "/resources/placements", "TrafficspacesPlacement");
+		return new TrafficspacesPlacementConnector($this->ad_server_end_point, "/resources/placements.xml", "TrafficspacesPlacement");
 	}
 }
 ?>

@@ -36,6 +36,7 @@ class TrafficspacesZone extends TrafficspacesResource {
 	var $scope;
 	var $info_url;
 	var $preview_url;
+	var $thumbnail_url;
 	var $default_ad_tag;
 	var $description;
 	var $linked_user;
@@ -50,6 +51,12 @@ class TrafficspacesZone extends TrafficspacesResource {
 	var $creation_date;
 	var $last_modified_date;
 
+	//******************************
+	//*** OTHER CONSTANTS 		****
+	//******************************
+	
+	const LINKED_USER_RESOURCE_NAME			= "linked_user";
+	
 	public function __construct(SimpleXMLElement $zone_xml = null) {
 		if ($zone_xml) {
 	    	// Load object dynamically and convert SimpleXMLElements into strings
@@ -58,13 +65,22 @@ class TrafficspacesZone extends TrafficspacesResource {
 		  			$this->pricing = new TrafficspacesZonePricing($element);
 			  	} else if ($key == "zone_statistic") {
 		  			$this->zone_statistic = new TrafficspacesZoneStatistic($element);
-			  	} else if ($key == "linked_user") {
-		  			$this->linked_user = new TrafficspacesLinkedResource($element, "linked_user");
+			  	} else if ($key == TrafficspacesZone::LINKED_USER_RESOURCE_NAME) {
+		  			$this->linked_user = new TrafficspacesLinkedResource($element, $key);
 			  	} else {	
 	    			$this->$key = (string) $element;
 	    		}
 		    }
 		}
+	}
+	public static function createZone($name, $width, $height, $formats, $pricing) {
+		$zone = new TrafficspacesZone();
+		$zone->name = $name;
+		$zone->width = $width;
+		$zone->height = $height;
+		$zone->formats = $formats;
+		$zone->pricing = $pricing;
+		return $zone;
 	}
 	
 	protected function getName() {
@@ -77,14 +93,19 @@ class TrafficspacesZonePricing extends TrafficspacesResource {
 	//** INPUT & OUTPUT VARIABLES **
 	//******************************
 	var $model;
-	var $accept_bids;
 	var $price;
+	var $price_increment;
 	var $volume_minimum;
 	var $volume_maximum;
-	var $volume_minimum;
+	var $volume_increment;
 	var $order_concurrency;
 	var $discounts;
-
+	
+	//******************************
+	//*** OUTPUT ONLY VARIABLES ****
+	//******************************
+	var $accept_bids;
+	
 	public function __construct(SimpleXMLElement $pricing_xml = null) {
 		if ($pricing_xml) {
 	    	// Load object dynamically and convert SimpleXMLElements into strings
@@ -99,6 +120,13 @@ class TrafficspacesZonePricing extends TrafficspacesResource {
 	    		}
 		    }
 		}
+	}
+
+	public static function createZonePricing($model, $price) {
+		$pricing = new TrafficspacesZonePricing();
+		$pricing->model = $model;
+		$pricing->price = $price;
+		return $pricing;
 	}
 	
 	protected function getName() {
@@ -145,12 +173,18 @@ class TrafficspacesZoneStatistic extends TrafficspacesResource {
 	var $date;
 	var $linked_zone;
 
+	//******************************
+	//*** OTHER CONSTANTS 		****
+	//******************************
+	
+	const LINKED_ZONE_RESOURCE_NAME			= "linked_zone";
+	
 	public function __construct(SimpleXMLElement $zone_statistic_xml = null) {
 		if ($zone_statistic_xml) {
 	    	// Load object dynamically and convert SimpleXMLElements into strings
 	    	foreach ($zone_statistic_xml as $key => $element) {
-				if ($key == "linked_zone") {
-		  			$this->linked_zone = new TrafficspacesLinkedResource($element, "linked_zone");
+				if ($key == TrafficspacesZoneStatistic::LINKED_ZONE_RESOURCE_NAME) {
+		  			$this->linked_zone = new TrafficspacesLinkedResource($element, $key);
 			  	} else {	
 	    			$this->$key = (string) $element;
 	    		}

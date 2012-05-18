@@ -46,17 +46,41 @@ class TrafficspacesCoupon extends TrafficspacesResource {
 	var $last_modified_date;
 	var $expiration_date;
 
+	//******************************
+	//*** OTHER CONSTANTS 		****
+	//******************************
+	
+	const LINKED_USER_RESOURCE_NAME			= "linked_user";
+	
 	public function __construct(SimpleXMLElement $coupon_xml = null) {
 		if ($coupon_xml) {
 	    	// Load object dynamically and convert SimpleXMLElements into strings
 	    	foreach ($coupon_xml as $key => $element) {
-			  	if ($key == "linked_user") {
-		  			$this->linked_user = new TrafficspacesLinkedResource($element, "linked_user");
+			  	if ($key == TrafficspacesCoupon::LINKED_USER_RESOURCE_NAME) {
+		  			$this->linked_user = new TrafficspacesLinkedResource($element, $key);
 			  	} else {	
 	    			$this->$key = (string) $element;
 	    		}
 		    }
 		}
+	}
+	
+	public static function createAbsoluteCoupon($name, $code, $base_value, $discount_value) {
+		return TrafficspacesCoupon::createCoupon($name, $code, $base_value, $discount_value, "absolute");
+	}
+	
+	public static function createRelativeCoupon($name, $code, $base_value, $discount_value) {
+		return TrafficspacesCoupon::createCoupon($name, $code, $base_value, $discount_value, "relative");
+	}
+	
+	public static function createCoupon($name, $code, $base_value, $discount_value, $type) {
+		$coupon = new TrafficspacesCoupon();
+		$coupon->name = $name;
+		$coupon->code = $code;
+		$coupon->base_value = $base_value;
+		$coupon->discount_value = $discount_value;
+		$coupon->type = $type;
+		return $coupon;
 	}
 	
 	protected function getName() {

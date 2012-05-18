@@ -42,17 +42,33 @@ class TrafficspacesFeed extends TrafficspacesResource {
 	var $creation_date;
 	var $last_modified_date;
 
+	//******************************
+	//*** OTHER CONSTANTS 		****
+	//******************************
+	
+	const LINKED_USER_RESOURCE_NAME			= "linked_user";
+	
 	public function __construct(SimpleXMLElement $feed_xml = null) {
 		if ($feed_xml) {
 	    	// Load object dynamically and convert SimpleXMLElements into strings
 	    	foreach ($feed_xml as $key => $element) {
-			  	if ($key == "linked_user") {
-		  			$this->linked_user = new TrafficspacesLinkedResource($element, "linked_user");
+			  	if ($key == TrafficspacesFeed::LINKED_USER_RESOURCE_NAME) {
+		  			$this->linked_user = new TrafficspacesLinkedResource($element, $key);
 			  	} else {	
 	    			$this->$key = (string) $element;
 	    		}
 		    }
 		}
+	}
+
+	public static function createFeed($name, $width, $height, $weight, $ad_tag) {
+		$feed = new TrafficspacesFeed();
+		$feed->name = $name;
+		$feed->width = $width;
+		$feed->height = $height;
+		$feed->weight = $weight;
+		$feed->ad_tag = $ad_tag;
+		return $feed;
 	}
 	
 	protected function getName() {

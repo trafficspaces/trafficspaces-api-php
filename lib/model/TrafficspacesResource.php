@@ -48,9 +48,12 @@ class TrafficspacesResource {
 	  	return $xml;
 	}
 
-	public function getXML() {
-		$xml = $this->getXMLObject();
-		return $xml->asXML();
+	public function getXML($include_header = true) {
+		$xml = $this->getXMLObject()->asXML();
+		if (!$include_header) {
+			$xml = preg_replace('/^(<\?xml)(.)*(\?>)/', "", $xml);
+		}
+		return $xml;
 	}
 
 	public function getJSON() {

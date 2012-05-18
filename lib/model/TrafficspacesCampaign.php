@@ -38,22 +38,37 @@ class TrafficspacesCampaign extends TrafficspacesResource {
 	var $creation_date;
 	var $last_modified_date;
 
+	//******************************
+	//*** OTHER CONSTANTS 		****
+	//******************************
+	
+	const LINKED_AD_RESOURCE_NAME			= "linked_ad";
+	const LINKED_ADS_RESOURCE_NAME			= "linked_ads";
+	const LINKED_USER_RESOURCE_NAME			= "linked_user";
+	
 	public function __construct(SimpleXMLElement $campaign_xml = null) {
 		if ($campaign_xml) {
 	    	// Load object dynamically and convert SimpleXMLElements into strings
 	    	foreach ($campaign_xml as $key => $element) {
-				if ($key == "linked_ads") {
+	    		if ($key == TrafficspacesCampaign::LINKED_ADS_RESOURCE_NAME) {
 					$this->linked_ads = array();
 					foreach ($element->children() as $sub_element) {
-						array_push($this->linked_ads, new TrafficspacesLinkedResource($sub_element, "linked_ad"));
+						array_push($this->linked_ads, new TrafficspacesLinkedResource($sub_element, TrafficspacesCampaign::LINKED_AD_RESOURCE_NAME));
 					}
-			  	} else if ($key == "linked_user") {
-		  			$this->linked_user = new TrafficspacesLinkedResource($element, "linked_user");
+				} else if ($key == TrafficspacesCampaign::LINKED_USER_RESOURCE_NAME) {
+		  			$this->linked_user = new TrafficspacesLinkedResource($element, $key);
 			  	} else {	
 	    			$this->$key = (string) $element;
 	    		}
 		    }
 		}
+	}
+	
+	public static function createCampaign($name, $linked_ads = null) {
+		$campaign = new TrafficspacesCampaign();
+		$campaign->name = $name;
+		$campaign->linked_ads = $linked_ads;
+		return $campaign;
 	}
 	
 	protected function getName() {

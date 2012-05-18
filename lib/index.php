@@ -22,40 +22,30 @@
  ** 
  ** Reference Documentation: http://support.trafficspaces.com/kb/api/api-introduction
  **/
-class TrafficspacesLinkedResource extends TrafficspacesResource {
+ 
+require_once('model/TrafficspacesResource.php');
+require_once('model/TrafficspacesLinkedResource.php');
+require_once('model/TrafficspacesUser.php');
+require_once('model/TrafficspacesContact.php');
+require_once('model/TrafficspacesZone.php');
+require_once('model/TrafficspacesAd.php');
+require_once('model/TrafficspacesCampaign.php');
+require_once('model/TrafficspacesTargetingPlan.php');
+require_once('model/TrafficspacesFeed.php');
+require_once('model/TrafficspacesOrder.php');
+require_once('model/TrafficspacesCoupon.php');
+require_once('model/TrafficspacesFlags.php');
+require_once('model/TrafficspacesPlacement.php');
+require_once('model/TrafficspacesException.php');
 
-	//******************************
-	//****** OUTPUT VARIABLES ******
-	//******************************
-	var $id;
-	var $name;
+require_once('controller/TrafficspacesEndPoint.php');
+require_once('controller/TrafficspacesConnector.php');
+require_once('controller/TrafficspacesPlacementConnector.php');
+require_once('controller/TrafficspacesConnectorFactory.php');
 
-	//******************************
-	//****** PRIVATE VARIABLES *****
-	//******************************
-	var $resource_name;
-	
-	public function __construct(SimpleXMLElement $linked_resource_xml = null, $resource_name = null) {
-		if ($linked_resource_xml) {
-	    	// Load object dynamically and convert SimpleXMLElements into strings
-	    	foreach ($linked_resource_xml as $key => $element) {
-	    		$this->$key  = (string) $element;
-		    }
-		}
-		$this->resource_name = $resource_name;
-	}
-	
-	public static function createLinkedResource($id, $name, $resource_name) {
-		$linked_resource = new TrafficspacesLinkedResource();
-		$linked_resource->id = $id;
-		$linked_resource->name = $name;
-		$linked_resource->resource_name = $resource_name;
-		return $linked_resource;
-	}
-	
-	protected function getName() {
-  		return $this->resource_name;
-  	}
-}
+require_once('tests/TrafficspacesAPITest.php');
+
+$apiTest = new TrafficspacesAPITest("test", "d91936b7c8fa83dfe9330b3a144839a2e43e189f9ffd00f5d8d15d20ac0a2136");
+$apiTest->runTests();
 
 ?>

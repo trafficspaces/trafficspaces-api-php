@@ -20,42 +20,41 @@
  ** OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  ** THE SOFTWARE.
  ** 
- ** Reference Documentation: http://support.trafficspaces.com/kb/api/api-introduction
+ ** Reference Documentation: http://support.trafficspaces.com/kb/api/api-placements
  **/
-class TrafficspacesLinkedResource extends TrafficspacesResource {
+class TrafficspacesFlags extends TrafficspacesResource {
 
 	//******************************
-	//****** OUTPUT VARIABLES ******
+	//*** INPUT ONLY VARIABLES  ****
 	//******************************
-	var $id;
-	var $name;
-
-	//******************************
-	//****** PRIVATE VARIABLES *****
-	//******************************
-	var $resource_name;
-	
-	public function __construct(SimpleXMLElement $linked_resource_xml = null, $resource_name = null) {
-		if ($linked_resource_xml) {
+		
+	var $keywords;
+	var $interests;
+	var $geographics;
+	var $coordinates;
+	var $genders;
+	var $ageranges;
+	var $incomeranges;
+	var $ethnicities;
+	var $relationships;
+	var $qualifications;
+	var $jobs;
+	var $industries;
+	var $politics;
+	var $religions;
+	var $languages; 
+		
+	public function __construct(SimpleXMLElement $flags_xml = null) {
+		if ($flags_xml) {
 	    	// Load object dynamically and convert SimpleXMLElements into strings
-	    	foreach ($linked_resource_xml as $key => $element) {
-	    		$this->$key  = (string) $element;
+	    	foreach ($flags_xml as $key => $element) {
+	    		$this->$key = (string) $element;
 		    }
 		}
-		$this->resource_name = $resource_name;
-	}
-	
-	public static function createLinkedResource($id, $name, $resource_name) {
-		$linked_resource = new TrafficspacesLinkedResource();
-		$linked_resource->id = $id;
-		$linked_resource->name = $name;
-		$linked_resource->resource_name = $resource_name;
-		return $linked_resource;
 	}
 	
 	protected function getName() {
-  		return $this->resource_name;
+  		return "flags";
   	}
 }
-
 ?>

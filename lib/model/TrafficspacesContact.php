@@ -37,6 +37,12 @@ class TrafficspacesContact extends TrafficspacesResource {
 	var $realm;
 	var $creation_date;
 	var $last_modified_date;
+	
+	//******************************
+	//*** OTHER CONSTANTS 		****
+	//******************************
+	
+	const LINKED_USER_RESOURCE_NAME			= "linked_user";
 
 	public function __construct(SimpleXMLElement $contact_xml = null) {
 		if ($contact_xml) {
@@ -44,13 +50,21 @@ class TrafficspacesContact extends TrafficspacesResource {
 	    	foreach ($contact_xml as $key => $element) {
 				if ($key == "profile") {
 		  			$this->profile = new TrafficspacesContactProfile($element);
-			  	} else if ($key == "linked_user") {
-		  			$this->linked_user = new TrafficspacesLinkedResource($element, "linked_user");
+			  	} else if ($key == TrafficspacesContact::LINKED_USER_RESOURCE_NAME) {
+		  			$this->linked_user = new TrafficspacesLinkedResource($element, $key);
 			  	} else {	
 	    			$this->$key = (string) $element;
 	    		}
 		    }
 		}
+	}
+	
+	public static function createContact($name, $profile, $linked_user) {
+		$contact = new TrafficspacesContact();
+		$contact->name = $name;
+		$contact->profile = $profile;
+		$contact->linked_user = $linked_user;
+		return $contact;
 	}
 
 	protected function getName() {
@@ -59,6 +73,11 @@ class TrafficspacesContact extends TrafficspacesResource {
 }
 
 class TrafficspacesContactProfile extends TrafficspacesResource {
+	
+	const TYPE_ADVERTISER = 0;
+		
+	const TYPE_PUBLISHER = 1;
+	
 	//******************************
 	//** INPUT & OUTPUT VARIABLES **
 	//******************************
@@ -80,6 +99,14 @@ class TrafficspacesContactProfile extends TrafficspacesResource {
 	    		}
 		    }
 		}
+	}
+	
+	public static function createContactProfile($email, $company_name, $type) {
+		$profile = new TrafficspacesContactProfile(); 
+		$profile->email = $email;
+		$profile->company_name = $company_name;
+		$profile->type = $type;
+		return $profile;
 	}
 
 	protected function getName() {

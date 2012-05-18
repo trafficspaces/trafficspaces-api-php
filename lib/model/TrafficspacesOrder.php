@@ -49,23 +49,46 @@ class TrafficspacesOrder extends TrafficspacesResource {
 	var $realm;
 	var $last_modified_date;
 
+	//******************************
+	//*** OTHER CONSTANTS 		****
+	//******************************
+	
+	const LINKED_ZONE_RESOURCE_NAME			= "linked_zone";
+	const LINKED_CAMPAIGN_RESOURCE_NAME		= "linked_campaign";
+	const LINKED_USER_RESOURCE_NAME			= "linked_user";
+	
 	public function __construct(SimpleXMLElement $order_xml = null) {
 		if ($order_xml) {
 	    	// Load object dynamically and convert SimpleXMLElements into strings
 	    	foreach ($order_xml as $key => $element) {
 				if ($key == "order_statistic") {
 		  			$this->order_statistic = new TrafficspacesOrderStatistic($element);
-			  	} else if ($key == "linked_user") {
-		  			$this->linked_user = new TrafficspacesLinkedResource($element, "linked_user");
-			  	} else if ($key == "linked_zone") {
-		  			$this->linked_zone = new TrafficspacesLinkedResource($element, "linked_zone");
-			  	} else if ($key == "linked_campaign") {
-		  			$this->linked_campaign = new TrafficspacesLinkedResource($element, "linked_campaign");
+			  	} else if ($key == TrafficspacesOrder::LINKED_USER_RESOURCE_NAME) {
+		  			$this->linked_user = new TrafficspacesLinkedResource($element, $key);
+			  	} else if ($key == TrafficspacesOrder::LINKED_ZONE_RESOURCE_NAME) {
+		  			$this->linked_zone = new TrafficspacesLinkedResource($element, $key);
+			  	} else if ($key == TrafficspacesOrder::LINKED_CAMPAIGN_RESOURCE_NAME) {
+		  			$this->linked_campaign = new TrafficspacesLinkedResource($element, $key);
 			  	} else {	
 	    			$this->$key = (string) $element;
 	    		}
 		    }
 		}
+	}
+	
+	public static function createOrder($price, $total_volume, $daily_volume, $start_date, $end_date, 
+			$linked_zone, $linked_campaign) {
+		$order = new TrafficspacesOrder();
+		$order->gross_purchase_price = $price;
+		$order->net_purchase_price = $price;
+		$order->maximum_bid_price = $price;
+		$order->total_volume = $total_volume;
+		$order->daily_volume = $daily_volume;
+		$order->start_date = $start_date;
+		$order->end_date = $end_date;
+		$order->linked_zone = $linked_zone;
+		$order->linked_campaign = $linked_campaign;
+		return $order;
 	}
 	
 	protected function getName() {
@@ -88,12 +111,18 @@ class TrafficspacesOrderStatistic extends TrafficspacesResource {
 	var $date;
 	var $linked_order;
 
+	//******************************
+	//*** OTHER CONSTANTS 		****
+	//******************************
+	
+	const LINKED_ORDER_RESOURCE_NAME		= "linked_order";
+	
 	public function __construct(SimpleXMLElement $order_statistic_xml = null) {
 		if ($order_statistic_xml) {
 	    	// Load object dynamically and convert SimpleXMLElements into strings
 	    	foreach ($order_statistic_xml as $key => $element) {
-				if ($key == "linked_order") {
-		  			$this->linked_order = new TrafficspacesLinkedResource($element, "linked_order");
+				if ($key == TrafficspacesOrderStatistic::LINKED_ORDER_RESOURCE_NAME) {
+		  			$this->linked_order = new TrafficspacesLinkedResource($element, $key);
 			  	} else {	
 	    			$this->$key = (string) $element;
 	    		}

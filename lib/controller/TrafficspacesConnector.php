@@ -37,8 +37,8 @@ class TrafficspacesConnector {
 	 ***********       CRUD FUNCTIONS       *************
 	 ****************************************************/
 
-	public function list($params) {
-	    $xml = $this->sendRequest("{$this->resource_path}?{$this->toQueryString($params)}", "XML");
+	public function find($params) {
+	    $xml = $this->sendRequest("{$this->resource_path}?{$this->toQueryString($params)}", "application/xml");
   		$all_resources = new SimpleXMLElement($xml);
 	    
 	    $resource_objects = array();
@@ -48,23 +48,23 @@ class TrafficspacesConnector {
 	    return $resource_objects;
 	}
 
-	public function find($id) {
-		$xml = $this->sendRequest("{$this->resource_path}/{$id}.xml", "XML");
-		return $this->resource_class->newInstance(new SimpleXMLElement($xml));
+	public function read($id) {
+		$xml = $this->sendRequest("{$this->resource_path}/{$id}.xml", "application/xml");
+		return $xml != null ? $this->resource_class->newInstance(new SimpleXMLElement($xml)) : null;
 	}
 
 	public function create($resource) {
-		$xml = $this->sendRequest("{$this->resource_path}", "XML", "POST", $resource->getXML());
+		$xml = $this->sendRequest("{$this->resource_path}", "application/xml", "POST", $resource->getXML());
 		return $this->resource_class->newInstance(new SimpleXMLElement($xml));
 	}
 
 	public function update($resource) {
-		$xml = $this->sendRequest("{$this->resource_path}/{$resource->id}.xml", "XML", "PUT", $resource->getXML());
+		$xml = $this->sendRequest("{$this->resource_path}/{$resource->id}.xml", "application/xml", "PUT", $resource->getXML());
 		return $this->resource_class->newInstance(new SimpleXMLElement($xml));
 	}
 	
 	public function delete($id) {
-		$this->sendRequest("{$this->resource_path}/{$id}.xml",  "XML", "DELETE");
+		$this->sendRequest("{$this->resource_path}/{$id}.xml",  "application/xml", "DELETE");
 		return true;
 	}
 
@@ -72,18 +72,24 @@ class TrafficspacesConnector {
 	 **********       UTILITY FUNCTIONS       ***********
 	 ****************************************************/
 	
-	private function sendRequest($uri, $format = 'XML', $method = 'GET', $data = '') {
+	public function sendRequest($uri, $contentType = 'application/xml', $method = 'GET', $data = '') {
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $this->end_point->base_uri . $uri);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-        curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $headerWrapper = new ResponseHeaderWrapper();
+        curl_setopt_array($ch, array( 
+        		CURLOPT_URL => $this->end_point->base_uri . $uri,
+        		CURLOPT_SSL_VERIFYPEER => false,
+        		CURLOPT_SSL_VERIFYHOST => 2,
+        		CURLOPT_FOLLOWLOCATION => true,
+        		CURLOPT_MAXREDIRS => 1,
+        		CURLOPT_RETURNTRANSFER => true,
+        		//CURLOPT_BUFFERSIZE => 1048576,
+        		CURLOPT_HEADERFUNCTION => array($headerWrapper, "readHeader")
+        	)
+        );
         
-        $contentType = $format == 'XML' ? "application/xml" : "application/json";
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        	"User-Agent: trafficspaces-api-php",
 	    	"Content-Type: {$contentType}; charset=UTF-8",
 	        "Accept: {$contentType}"
 	    ));
@@ -96,7 +102,7 @@ class TrafficspacesConnector {
         if($method == 'POST') {
         
             curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);	
         } else if ($method == 'PUT') {
         
 	        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -117,24 +123,32 @@ class TrafficspacesConnector {
         $curl_error = ($result->code > 0 ? null : curl_error($ch) . ' (' . curl_errno($ch) . ')');
 
         curl_close($ch);
-
-		if ($result->code == 200 || $result->code == 201) {
+        
+        $headers = $headerWrapper->getHeaders();
+        
+		if ($result->code == 200) {
         	return $result->response;
+		} else if ($result->code == 201 && array_key_exists("Location", $headers)) {
+        	return $this->sendRequest($headers["Location"], $contentType, "GET");
 		} else {
 	        if ($curl_error) {
 	        
 	            throw new TrafficspacesConnectionException('An error occurred while connecting to Trafficspaces: ' . $curl_error);
-	        } else if ($xml->code == 403) { //FORBIDDEN
+	        } else if ($result->code == 403) { //FORBIDDEN
 	        
 				throw new TrafficspacesException('{$method} is not supported for this resource through the Trafficspaces API.',$result->code);
-			} else if ($xml->code == 404) { //NOT FOUND
+			} else if ($result->code == 404) { //NOT FOUND
 			
-				$errors = new SimpleXMLElement($xml->response);
-				throw new TrafficspacesNotFoundException($xml->code, $errors);
-	        } else if ($result->code ==== 422) { //UNPROCESSABLE ENTITY
+				//$errors = new SimpleXMLElement($result->response);
+				//throw new TrafficspacesNotFoundException($result->code, $errors);
+				return null;
+	        } else if ($result->code === 422) { //UNPROCESSABLE ENTITY
 	        
 				$errors = new SimpleXMLElement($result->response);
 				throw new TrafficspacesValidationException($result->code, $errors);
+			} else if ($result->code >= 500) { // SERVER ERROR
+	        
+				throw new TrafficspacesException($result->response, $result->code);
 			}
 		}
 	}
@@ -146,5 +160,15 @@ class TrafficspacesConnector {
 		}
 		return $queryString;
 	}	
+}
+class ResponseHeaderWrapper {
+	private $headerBuf = "";
+	public function readHeader($ch, $header) {
+		$this->headerBuf .= $header;
+		return strlen($header);
+	}
+	public function getHeaders() {
+		return http_parse_headers($this->headerBuf);
+	}
 }
 ?>

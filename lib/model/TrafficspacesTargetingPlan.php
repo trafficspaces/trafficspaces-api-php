@@ -38,14 +38,20 @@ class TrafficspacesTargetingPlan extends TrafficspacesResource {
 	var $creation_date;
 	var $last_modified_date;
 
+	//******************************
+	//*** OTHER CONSTANTS 		****
+	//******************************
+	
+	const LINKED_USER_RESOURCE_NAME			= "linked_user";
+	
 	public function __construct(SimpleXMLElement $targeting_plan_xml = null) {
 		if ($targeting_plan_xml) {
 	    	// Load object dynamically and convert SimpleXMLElements into strings
 	    	foreach ($targeting_plan_xml as $key => $element) {
 				if ($key == "targets") {
 		  			$this->targets = new TrafficspacesTargetingPlanTargets($element);
-			  	} else if ($key == "linked_user") {
-		  			$this->linked_user = new TrafficspacesLinkedResource($element, "linked_user");
+			  	} else if ($key == TrafficspacesTargetingPlan::LINKED_USER_RESOURCE_NAME) {
+		  			$this->linked_user = new TrafficspacesLinkedResource($element, $key);
 			  	} else {	
 	    			$this->$key = (string) $element;
 	    		}
@@ -53,6 +59,13 @@ class TrafficspacesTargetingPlan extends TrafficspacesResource {
 		}
 	}
 
+	public static function createTargetingPlan($name, $targets) {
+		$targetingPlan = new TrafficspacesTargetingPlan();
+		$targetingPlan->name = $name;
+		$targetingPlan->targets = $targets;
+		return $targetingPlan;
+	}
+	
 	protected function getName() {
   		return "targeting_plan";
   	}
