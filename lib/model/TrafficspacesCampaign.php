@@ -29,6 +29,7 @@ class TrafficspacesCampaign extends TrafficspacesResource {
 	var $name;
 	var $linked_ads;
 	var $linked_user;
+	var $linked_contact;
 	
 	//******************************
 	//*** OUTPUT ONLY VARIABLES ****
@@ -45,6 +46,7 @@ class TrafficspacesCampaign extends TrafficspacesResource {
 	const LINKED_AD_RESOURCE_NAME			= "linked_ad";
 	const LINKED_ADS_RESOURCE_NAME			= "linked_ads";
 	const LINKED_USER_RESOURCE_NAME			= "linked_user";
+	const LINKED_CONTACT_RESOURCE_NAME		= "linked_contact";
 	
 	public function __construct(SimpleXMLElement $campaign_xml = null) {
 		if ($campaign_xml) {
@@ -57,6 +59,8 @@ class TrafficspacesCampaign extends TrafficspacesResource {
 					}
 				} else if ($key == TrafficspacesCampaign::LINKED_USER_RESOURCE_NAME) {
 		  			$this->linked_user = new TrafficspacesLinkedResource($element, $key);
+			  	} else if ($key == TrafficspacesCampaign::LINKED_CONTACT_RESOURCE_NAME) {
+		  			$this->linked_contact = new TrafficspacesLinkedResource($element, $key);
 			  	} else {	
 	    			$this->$key = (string) $element;
 	    		}
@@ -64,10 +68,11 @@ class TrafficspacesCampaign extends TrafficspacesResource {
 		}
 	}
 	
-	public static function createCampaign($name, $linked_ads = null) {
+	public static function createCampaign($name, $linked_ads = null, $linked_contact = null) {
 		$campaign = new TrafficspacesCampaign();
 		$campaign->name = $name;
 		$campaign->linked_ads = $linked_ads;
+		$campaign->linked_contact = $linked_contact;
 		return $campaign;
 	}
 	
