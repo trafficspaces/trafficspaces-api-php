@@ -29,7 +29,7 @@ class TrafficspacesAPITest {
 
 	private $defaults;
 
-	private $dateTimeFormat = "Ymd\TH:i:s";
+	private $dateTimeFormat = "Y-m-d\TH:i:s";
 
 	public function __construct($sub_domain, $api_key) {
 		$this->factory = new TrafficspacesConnectorFactory($sub_domain, $api_key);
